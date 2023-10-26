@@ -1,0 +1,11 @@
+uuid
+redis
+pymysql
+aiofiles
+tornado
+requests
+timer
+torch
+numpy
+dbutils
+python-dotenv
