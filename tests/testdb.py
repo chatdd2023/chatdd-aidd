@@ -1,5 +1,6 @@
 from aidd.db.redishelper import RedisHelper
 from aidd.db.mysqlhelper import MySqLHelper
+import aidd.common.logger
 
 '''
 redis 测试
@@ -7,6 +8,7 @@ redis 测试
 redis=RedisHelper()
 redis.set("bobo","badao")
 print(redis.get("bobo"))
+
 
 '''
 mysql 测试
