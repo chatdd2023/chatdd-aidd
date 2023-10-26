@@ -9,3 +9,4 @@ torch
 numpy
 dbutils
 python-dotenv
+torchvision
