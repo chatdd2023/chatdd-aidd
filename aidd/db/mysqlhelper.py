@@ -13,7 +13,7 @@ DB_USERNAME = os.getenv('DB_USERNAME')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # 数据库连接编码
-DB_CHARSET = "utf8"
+DB_CHARSET = "utf8mb4"
 # mincached : 启动时开启的闲置连接数量(缺省值 0 开始时不创建连接)
 DB_MIN_CACHED = 10
 # maxcached : 连接池中允许的闲置的最多连接数量(缺省值 0 代表不闲置连接池大小)
