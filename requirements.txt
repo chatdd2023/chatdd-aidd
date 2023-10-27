@@ -1,7 +1,6 @@
 uuid
 redis
 pymysql
-aiofiles
 tornado
 requests
 timer
@@ -10,3 +9,7 @@ numpy
 dbutils
 python-dotenv
 torchvision
+rdkit
+transformers
+torch_geometric
+torch_scatter
