@@ -1,28 +1,27 @@
+'''
+正式环境执行：
+python -m aidd.json_data_init_drug --env=prod
+测试环境执行：
+python -m aidd.json_data_init_drug --env=dev
+'''
 import json
-# import pymysql
-from db.mysqlhelper import MySqLHelper
-import common.logger
-
-# 读取蛋白质json文件 uniprot_accession.json ，将其插入到数据库表 chatdd_target_protein_info
-# ...
-
+from aidd.db.mysqlhelper import MySqLHelper
 
 # 读取药物json文件 drug_syn_smiles.json ，将其插入到数据库表 chatdd_drug_molecule_info
-with open('F:\\work\\data\\drug_syn_smiles.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
+mysqlhelper = MySqLHelper()
+drug_file_path = '/Users/tielei/Documents/project/pharmolix/aidd_data_processing/drug_syn_smiles_part.json'
+with open(drug_file_path, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+    count = 0
+    for drug_name, properties in data.items():
+        if (properties['smiles'] != []) :
+            smiles = properties['smiles']
+            name_set = set(synonym for synonym in properties['synonyms'])
+            name_set.add(drug_name)
+            count += len(name_set)
+            for name in name_set:
+                result = mysqlhelper.insertone(
+                    "insert into chatdd_drug_molecule_info (name, smiles) values(%s, %s)",
+                    (name, smiles))
 
-    count = 0;
-
-    if isinstance(data, dict):
-        for key2, value in data.items():
-            if (value['smiles'] != []) :
-                # print(value['smiles'])
-                smiles = value['smiles']
-                mysqlhelper = MySqLHelper()
-                for name in value['synonyms'] :
-                    result = mysqlhelper.insertone(
-                        "insert into chatdd_drug_molecule_info(name, smiles) values( % s,  % s)",
-                        (name, smiles))
-                    # print("result====", result)
-                    count += 1
-                    print("count:", count)
+print(f"total inserted drug count: {count}")
