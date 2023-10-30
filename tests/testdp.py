@@ -1,18 +1,21 @@
 import json
+import os
+
 from rdkit import Chem
 from aidd.inference.dp_model import DPModel
 from aidd.utils.data_utils import DataProcessorFast
 import torch
+from aidd.config.env import *  # 导入 os 模块，其中包含了环境变量
 
 config = json.load(open("/Users/bo.li/chatdd-aidd/aidd/config/mol/graphmvp.json", "r"))
+
 smi_processor = DataProcessorFast(entity_type="molecule", config=config["data"]["mol"])
 
 smi = "OC(=O)c1cc(\C=C\c2ccc(cc2)N2CCOCC2)nc2ccccc12"
+
 # 将smiles转为标准canonical格式。这里需要判断一下输入是否合法，如果是一个错误的smiles，需要系统提示用户纠正
 mol = Chem.MolFromSmiles(smi)
 smi_clean = Chem.MolToSmiles(mol,isomericSmiles=False, canonical=True)
-
-
 
 smi_input = smi_processor(smi_clean)
 
@@ -37,7 +40,7 @@ sider_label = ['Hepatobiliary disorders',
 
 sider_task_num = 27
 model = DPModel(config, sider_task_num)
-state_dict = torch.load("/Users/bo.li/chatdd-aidd/aidd/model/dp/graphmvp_finetune_SIDER.pth", map_location="cpu")
+state_dict = torch.load(os.getenv("FINETUNE_SIDER_MODEL_PATH"), map_location="cpu")
 model.load_state_dict(state_dict["model_state_dict"])
 
 
@@ -48,17 +51,16 @@ with torch.no_grad():
     for ind, i in enumerate(logit_output):
         if i > 0:
             output.append(sider_label[ind])
-print(output)
 
+print(output)
 
 tox_label = ['NR-AR', 'NR-AR-LBD', 'NR-AhR', 'NR-Aromatase', 'NR-ER', 'NR-ER-LBD', 'NR-PPAR-gamma',
              'SR-ARE', 'SR-ATAD5', 'SR-HSE', 'SR-MMP', 'SR-p53']
 
 tox_task_num = 12
 model = DPModel(config, tox_task_num)
-state_dict = torch.load("/Users/bo.li/chatdd-aidd/aidd/model/dp/graphmvp_finetune_Tox21.pth", map_location="cpu")
+state_dict = torch.load(os.getenv("FINETUNE_TOX21_MODEL_PATH"), map_location="cpu")
 model.load_state_dict(state_dict["model_state_dict"])
-# model.load_state_dict(state_dict)
 
 model.eval()
 output = []

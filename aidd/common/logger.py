@@ -25,8 +25,8 @@ class Logger:
     def error(self, message):
         self.logger.error(message)
 
-logger = Logger('mylog.log')
-errorlogger = Logger('mylogerror.log')
+logger = Logger('chatdd_info.log')
+errorlogger = Logger('chatdd_error.log')
 
 if __name__ == '__main__':
     logger = Logger('mylog.log')

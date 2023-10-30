@@ -16,7 +16,7 @@
           "gin_hidden_dim": 300,
           "gin_num_layers": 5,
           "drop_ratio": 0.5,
-          "init_checkpoint": "/Users/bo.li/chatdd-aidd/aidd/model/dp/pretraining_model.pth",
+          "init_checkpoint": "/Users/bo.li/Documents/model/dp/pretraining_model.pth",
           "param_key": ""
       },
       "pred_head": {

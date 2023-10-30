@@ -1,26 +1,109 @@
-import tornado.ioloop
+import json
+from typing import Dict,List
 import tornado.web
-from tornado.gen import coroutine
+from aidd.service.drug_molecule_info_service import DrugMoleculeInfo
+from aidd.service.dti_service import DTIService
+from aidd.config.env import *  # 导入 os 模块，其中包含了环境变量
+from aidd.common.utils import *
+from aidd.common.logger import *
 
 '''
-  功能：构建tornado web 服务
-  author:boge
-  date:2023-11-26
+   功能：
+   author:boge
+   date:2023-10-30
 '''
+class DtiHandler(tornado.web.RequestHandler):
+    async def post(self):
+        logger.info(self.request.body.decode("utf-8"))
+        data = self.request.body.decode("utf-8")
+        request_id=None
+        try:
+            json_data = json.loads(data)
+            errors=[]
+            errors=validate(json_data)
+            if len(errors) > 0:
+                # 解析JSON数据失败，返回错误JSON响应
+                response = {
+                    "request_id": request_id,
+                    "code": "400",
+                    "message": errors
+                }
+                self.finish(response)
+                return
+            request_id = json_data['request_id']
+            # 化合物的输入
+            compound = json_data['compound']
+            drugMoleculeInfo = DrugMoleculeInfo()
+            smiles = drugMoleculeInfo.seachSmilesByName(compound)
+            # 检索drog库 如果结果不为None
+            if smiles is not None:
+                inputsmiresult = transition_to_canonical(smiles[0][0])
+            # 如果为None 则直接转换输入的化合物
+            else:
+                inputsmiresult = transition_to_canonical(compound)
+            # 如果转换的结果为None 则返回错误结果
+            if inputsmiresult is None:
+                response = {
+                    "request_id": request_id,
+                    "code": "400",
+                    "message": "compound format error"
+                }
+                self.finish(response)
+                return
+            # 靶点 & 小分子的输入
+            dti_service = DTIService()
+            dti_all_result = dti_service.process(request_id,inputsmiresult, json_data['target'])
+            response = {
+                "requestId": request_id,
+                "code": 200,
+                "data": dti_all_result,
+                "message": "success"
+            }
+            self.finish(response)
+        except ValueError:
+            # 解析JSON数据失败，返回错误JSON响应
+            response = {
+                "request_id": request_id,
+                "code": "400",
+                "message": "无效的JSON数据"
+            }
+            self.finish(response)
+        except Exception as e:
+            # 处理异常情况，返回错误JSON响应
+            response = {
+                "request_id":request_id,
+                "code": 400,
+                "message": str(e)
+            }
+            self.finish(response)
 
-class AsyncHandler(tornado.web.RequestHandler):
-    @coroutine
-    def get(self):
-        yield tornado.gen.sleep(2)
-        self.write("Async request complete!")
+def validate(data:Dict)->List[str]:
+    errors=[]
+    for key in ["request_id","target","compound"]:
+        if key not in data:
+            errors.append(f"Field {key} not found")
+            return errors
+    return errors
 
-def make_app():
-    return tornado.web.Application([
-        (r"/async", AsyncHandler),
-    ])
+url_patterns = [
+    (r"/tooling/dti", DtiHandler)
+]
+
+if __name__ =="__main__":
+
+    app = tornado.web.Application(url_patterns)
+    http_server = tornado.httpserver.HTTPServer(app)
+
+    if args.num_process == 1:
+        logger.info("服务启动。。。。")
+        http_server.listen(args.http_port)
+        tornado.ioloop.IOLoop.instance().start()
+        logger.info("服务启动成功")
+    else:
+        http_server.bind(args.http_port)
+        http_server.start(num_processes=args.num_process)
+        tornado.ioloop.IOLoop.instance().start()
 
 
-if __name__ == "__main__":
-    app = make_app()
-    app.listen(9000)
-    tornado.ioloop.IOLoop.current().start()
+
+

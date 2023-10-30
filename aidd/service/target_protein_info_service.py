@@ -18,9 +18,16 @@ class TargetProteinInfoService(object):
         return result
 
     def seachSequenceByName(self,name):
-        result=self.mysqlhelper.selectall("select sequence from chatdd_target_protein_info where name=%s",(name))
+        result=self.mysqlhelper.selectall("select name,entry_name,sequence from chatdd_target_protein_info where name=%s",(name))
         if len(result)>0:
-            return result
+            resultlist=[]
+            for oneresult in result:
+                result=[]
+                result.append(oneresult[0])
+                result.append(oneresult[1])
+                result.append(oneresult[2])
+                resultlist.append(result)
+            return resultlist
         return None
 
 infoService = TargetProteinInfoService()
@@ -28,6 +35,9 @@ infoService = TargetProteinInfoService()
 #infoService.insertTargetProteinInfo("Protein MGF 100-1R","1001R_ASFM2","MVRLFHNPIKCLFYRGSRKTREKKLRKSLKKLNFYHPPGDCCQIYRLLENVPGGTYFITENMTNELIMIVKDSVDKKIKSVKLNFYGSYIKIHQHYYINIYMYLMRYTQIYKYPLICFNKYSYCNS")
 #infoService.insertTargetProteinInfo("Protein MGF 100-2L","1002L_ASFM2","MGNKESKYLEMCSDEAWLNIPNVFKCIFIRKLFYNKWLKYQEKKLEKRLRLLSFYHAKKDFIGIRDMLQTAPGGSYFITDNITEEFLMLVLKHPEDGSAEFTKLCLKGSCIMIDGYYYDNLDIFLAESPDLYKYPLIRYDR")
 
-print(infoService.seachSequenceByName("Protein MGF 100-1R"))
 
-print(infoService.seachSequenceByName("Protein MGF 100-2L"))
+
+
+
+
+#print(infoService.seachSequenceByName("Protein MGF 100-2L"))

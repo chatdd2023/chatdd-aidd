@@ -1,9 +1,11 @@
 from aidd.common.logger import *
 import os
 from typing import Dict,List,Tuple
-
+import tornado
+import json
 logger.info('Info message')
 logger.info('error message')
+
 def get_service_description():
     curr_dir=os.path.dirname(os.path.abspath(__file__))
     image_name=open(os.path.join(curr_dir,"docker/IMAGE")).read().strip()
@@ -15,12 +17,20 @@ def fail_response(request_id:str,err_code:int,err_message:str) ->Dict[str,object
     response = dict()
     response["requestId"] = request_id
     response["code"] = err_code
-    response["message"] = "success"
-
+    response["message"] = err_message
     return response
 def success_response(request_id:str) ->[str,object]:
     response=dict()
     response["requestId"]=request_id
     response["code"]=200
     response["message"]="success"
+    return response
+
+def success_aidd_response(request_id:str,data:dict):
+    response={
+        "requestId":request_id,
+        "code":200,
+        "data":data,
+        "message":"success"
+    }
     return response

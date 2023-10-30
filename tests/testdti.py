@@ -4,10 +4,9 @@ from aidd.utils.data_utils import DataProcessorFast
 from rdkit import Chem
 import torch
 import numpy as np
+from aidd.config.env import *  # 导入 os 模块，其中包含了环境变量
 
-
-config = json.load(open("/Users/bo.li/chatdd-aidd/aidd/config/mgraphdta.json", "r"))
-print("Config: ", config)
+config = json.load(open("../aidd/config/mgraphdta.json", "r"))
 processor1 = DataProcessorFast(entity_type="molecule", config=config["data"]["mol"])
 processor2 = DataProcessorFast(entity_type="protein", config=config["data"]["protein"])
 
@@ -21,11 +20,9 @@ smi_clean = Chem.MolToSmiles(mol,isomericSmiles=False, canonical=True)
 
 smi_input = processor1(smi_clean)
 sequence_input = processor2(sequence)
-print(smi_input)
-print(sequence_input)
 
 model = DTIModel(config["network"], pred_dim=1)
-state_dict = torch.load("/Users/bo.li/chatdd-aidd/aidd/model/dti/mgraphdta.pth", map_location="cpu")
+state_dict = torch.load(os.getenv("DTI_MODEL_PATH"), map_location="cpu")
 model.load_state_dict(state_dict["model_state_dict"])
 model.eval()
 

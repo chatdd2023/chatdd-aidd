@@ -12,7 +12,3 @@ def transition_to_canonical(smile):
         return smi_clean
     except Exception as err:
         return None
-
-
-print(transition_to_canonical("sssssdfdsadadsf"))
-print(transition_to_canonical("OC(=O)c1cc(\C=C\c2ccc(cc2)N2CCOCC2)nc2ccccc12"))
