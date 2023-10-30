@@ -14,7 +14,7 @@ from aidd.common.logger import *
 '''
 class DtiHandler(tornado.web.RequestHandler):
     async def post(self):
-        logger.info(self.request.body.decode("utf-8"))
+
         data = self.request.body.decode("utf-8")
         request_id=None
         try:
@@ -31,6 +31,7 @@ class DtiHandler(tornado.web.RequestHandler):
                 self.finish(response)
                 return
             request_id = json_data['request_id']
+            logger_ouput_INFO(request_id, "__main__", "__main__", f"请求调用开始  request json : {json_data}")
             # 化合物的输入
             compound = json_data['compound']
             drugMoleculeInfo = DrugMoleculeInfo()
@@ -90,18 +91,19 @@ url_patterns = [
 ]
 
 if __name__ =="__main__":
-
+    logger_ouput_INFO(None,"__main__","__main__","开始启动")
     app = tornado.web.Application(url_patterns)
     http_server = tornado.httpserver.HTTPServer(app)
 
     if args.num_process == 1:
-        logger.info("服务启动。。。。")
         http_server.listen(args.http_port)
+        logger_ouput_INFO(None, "__main__", "__main__", f"启动成功{args.http_port}")
         tornado.ioloop.IOLoop.instance().start()
         logger.info("服务启动成功")
     else:
         http_server.bind(args.http_port)
         http_server.start(num_processes=args.num_process)
+        logger_ouput_INFO(None, "__main__", "__main__", f"启动成功{args.http_port}")
         tornado.ioloop.IOLoop.instance().start()
 
 
