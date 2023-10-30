@@ -12,9 +12,25 @@ from aidd.common.logger import *
    author:boge
    date:2023-10-30
 '''
+def success_aidd_response(request_id:str,data:dict):
+    response={
+        "requestId":request_id,
+        "code":200,
+        "data":data,
+        "message":"success"
+    }
+    return response
+def fail_response(request_id:str,message:str):
+    response={
+        "requestId":request_id,
+        "code":400,
+        "message":message
+    }
+    return response
+
+
 class DtiHandler(tornado.web.RequestHandler):
     async def post(self):
-
         data = self.request.body.decode("utf-8")
         request_id=None
         try:
@@ -23,15 +39,11 @@ class DtiHandler(tornado.web.RequestHandler):
             errors=validate(json_data)
             if len(errors) > 0:
                 # 解析JSON数据失败，返回错误JSON响应
-                response = {
-                    "request_id": request_id,
-                    "code": "400",
-                    "message": errors
-                }
-                self.finish(response)
-                return
+                self.finish(fail_response(request_id,errors))
             request_id = json_data['request_id']
             logger_ouput_INFO(request_id, "__main__", "__main__", f"请求调用开始  request json : {json_data}")
+
+
             # 化合物的输入
             compound = json_data['compound']
             drugMoleculeInfo = DrugMoleculeInfo()
@@ -42,41 +54,22 @@ class DtiHandler(tornado.web.RequestHandler):
             # 如果为None 则直接转换输入的化合物
             else:
                 inputsmiresult = transition_to_canonical(compound)
+
             # 如果转换的结果为None 则返回错误结果
             if inputsmiresult is None:
-                response = {
-                    "request_id": request_id,
-                    "code": "400",
-                    "message": "compound format error"
-                }
-                self.finish(response)
-                return
+                self.finish(fail_response(request_id,"compound format error"))
+
             # 靶点 & 小分子的输入
             dti_service = DTIService()
             dti_all_result = dti_service.process(request_id,inputsmiresult, json_data['target'])
-            response = {
-                "requestId": request_id,
-                "code": 200,
-                "data": dti_all_result,
-                "message": "success"
-            }
-            self.finish(response)
+            self.finish(success_aidd_response(request_id,dti_all_result))
+
         except ValueError:
             # 解析JSON数据失败，返回错误JSON响应
-            response = {
-                "request_id": request_id,
-                "code": "400",
-                "message": "无效的JSON数据"
-            }
-            self.finish(response)
+            self.finish(fail_response(request_id,"无效的JSON数据"))
         except Exception as e:
             # 处理异常情况，返回错误JSON响应
-            response = {
-                "request_id":request_id,
-                "code": 400,
-                "message": str(e)
-            }
-            self.finish(response)
+            self.finish(fail_response(request_id, str(e)))
 
 def validate(data:Dict)->List[str]:
     errors=[]
