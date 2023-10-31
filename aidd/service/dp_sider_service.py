@@ -50,7 +50,7 @@ class DpSiderService(object):
             for ind, i in enumerate(logit_output):
                 if i > 0:
                     output.append(sider_label[ind])
-        return logit_output
+        return output
 
 
 

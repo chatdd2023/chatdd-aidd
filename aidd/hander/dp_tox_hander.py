@@ -30,6 +30,7 @@ class DpToxHandler(tornado.web.RequestHandler):
             compound = json_data['compound']
             drugMoleculeInfo = DrugMoleculeInfo()
             smiles = drugMoleculeInfo.seachSmilesByName(compound)
+
             # 检索drog库 如果结果不为None
             if smiles is not None:
                 inputsmiresult = transition_to_canonical(smiles[0][0])
