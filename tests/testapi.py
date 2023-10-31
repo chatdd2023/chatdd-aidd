@@ -1,9 +1,7 @@
-import tornado.ioloop
 import tornado.web
 import json
-from typing import Dict,List,Tuple
-from aidd.config.env import *  # 导入 os 模块，其中包含了环境变量
-from aidd.base import fail_response, success_response
+from typing import Dict,List
+from aidd.hander.base import fail_response, success_response
 from aidd.config.env import *  # 导入 os 模块，其中包含了环境变量
 
 '''

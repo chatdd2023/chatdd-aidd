@@ -19,13 +19,13 @@ class DTIService(object):
     def process(self,request_id,smi_clean,target):
         logger_ouput_INFO(request_id, "DTIService", "process", f"DTI 计算开始  smi_clean:{smi_clean} target:{target}")
         sequence=self.target.seachSequenceByName(target)
-        dtiallresult = {}
+        dtiallresult = []
         for result in sequence:
             dtiresult = {}
             dtiresult["Target_Name"] = result[0].decode("utf-8")
             dtiresult["Uniprot_ID"] = result[1].decode("utf-8")
             dtiresult["Affinity_Value"] = self.compute(request_id,smi_clean, result[2].decode('utf-8'))
-            dtiallresult.update(dtiresult)
+            dtiallresult.append(dtiresult)
         return dtiallresult
     def compute(self,request_id,smi_clean,sequence):
 
