@@ -12,6 +12,7 @@ from aidd.service.dp_tox_service import DpToxService
 from aidd.service.drug_molecule_info_service import DrugMoleculeInfo
 from typing import Dict,List
 from aidd.hander.base import *
+import aidd.common.constants as constant
 
 class DpToxHandler(tornado.web.RequestHandler):
     async def post(self):
@@ -31,7 +32,8 @@ class DpToxHandler(tornado.web.RequestHandler):
 
             input_result = get_canonical(compound)
             if input_result is None:
-                await self.finish(fail_response(request_id, "compound format error"))
+                message_compound_error = constant.message_compound_error.replace("{compound name}", compound)
+                await self.finish(fail_response(request_id, message_compound_error,400))
             else:
                 dptox_service=DpToxService()
                 dptox_all_result = dptox_service.process(request_id,input_result)
@@ -42,7 +44,7 @@ class DpToxHandler(tornado.web.RequestHandler):
 
         except ValueError:
             # 解析JSON数据失败，返回错误JSON响应
-            await self.finish(fail_response(request_id, "无效的JSON数据"))
+            await self.finish(fail_response(request_id, "无效的JSON数据",500))
         except Exception as e:
             # 处理异常情况，返回错误JSON响应
             await self.finish(fail_response(request_id, str(e)))

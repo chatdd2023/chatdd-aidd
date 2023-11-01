@@ -21,10 +21,10 @@ def success_aidd_response(request_id:str,data:list):
         "message":"success"
     }
     return response
-def fail_response(request_id:str,message:str):
+def fail_response(request_id:str,message:str,code:int):
     response={
         "requestId":request_id,
-        "code":400,
+        "code":code,
         "message":message
     }
     return response
