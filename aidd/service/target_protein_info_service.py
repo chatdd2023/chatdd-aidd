@@ -14,7 +14,6 @@ class TargetProteinInfoService(object):
         result = self.mysqlhelper.insertone(
             "insert into chatdd_target_protein_info (name,entry_name,sequence) values(%s, %s,%s)",
             (name,entry_name,sequence))
-        print(result)
         return result
 
     def seachSequenceByName(self,name):
