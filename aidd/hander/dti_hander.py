@@ -8,7 +8,7 @@ import json
 import aidd
 from aidd.common.constants import message_compound_error
 from aidd.common.logger import logger_ouput_INFO
-from aidd.common.utils import transition_to_canonical, get_canonical
+from aidd.common.utils import transition_to_canonical, get_canonical, get_canonical_query
 from aidd.service.drug_molecule_info_service import DrugMoleculeInfo
 from aidd.service.dti_service import DTIService
 from typing import Dict,List
@@ -31,8 +31,8 @@ class DtiHandler(tornado.web.RequestHandler):
 
             # 化合物的输入
             compound = json_data['compound']
-            input_result=get_canonical(compound)
-
+            input_result=get_canonical_query(compound)
+            print("input_result=======",input_result)
             if input_result is None:
                message_compound_error=constant.message_compound_error.replace("{compound name}",compound)
                await self.finish(fail_response(request_id, message_compound_error,400))

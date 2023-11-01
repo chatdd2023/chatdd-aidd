@@ -20,9 +20,27 @@ def transition_to_canonical(smile):
 def get_canonical(compound):
     input_result = transition_to_canonical(compound)
     if input_result is None:
-        pcp_result = pcp.get_properties('CanonicalSMILES', compound, 'name')
-        if len(pcp_result) > 0:
-            input_result = pcp_result[0]['CanonicalSMILES']
+        drug_Molecule_Info = DrugMoleculeInfo()
+        input_result = drug_Molecule_Info.seachSmilesByName(compound)
+        if input_result is None:
+            pcp_result = pcp.get_properties('CanonicalSMILES', compound, 'name')
+            if len(pcp_result) > 0:
+                input_result = pcp_result[0]['CanonicalSMILES']
+        else:
+            input_result = input_result[0][0].decode("utf-8")
+    return input_result
+
+def get_canonical_query(compound):
+    input_result = transition_to_canonical(compound)
+    if input_result is None:
+        drug_Molecule_Info = DrugMoleculeInfo()
+        input_result = drug_Molecule_Info.seachSmilesByName(compound)
+        if input_result is None:
+            pcp_result = pcp.get_properties('CanonicalSMILES', compound, 'name')
+            if len(pcp_result) > 0:
+                input_result = pcp_result[0]['CanonicalSMILES']
+        else:
+            input_result=input_result[0][0].decode("utf-8")
     return input_result
 
 

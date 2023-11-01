@@ -13,3 +13,4 @@ rdkit
 transformers
 torch_geometric
 torch_scatter
+pubchempy
