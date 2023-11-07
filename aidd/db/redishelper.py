@@ -25,6 +25,11 @@ class RedisHelper:
     # 获取key-value
     def get(self, key):
         return self.__redis.get(key).decode()
+    def search_float(self,pattern):
+        cursor = 0
+        cursor,keys = self.__redis.scan(0,pattern,count=100000000)
+        return {key.decode():float(self.__redis.get(key.decode()).decode()) for key in keys}
+
 
     # 判断key是否存在
     def is_existsKey(self, key):
