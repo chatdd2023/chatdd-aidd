@@ -17,7 +17,7 @@ class TargetProteinInfoService(object):
         return result
 
     def seachSequenceByName(self,name):
-        result=self.mysqlhelper.selectall("select name,entry_name,sequence from chatdd_target_protein_info where name=%s",(name))
+        result=self.mysqlhelper.selectall("select name,entry_name,sequence from chatdd_target_protein_info where lower(name)=lower(%s)",(name))
         if len(result)>0:
             resultlist=[]
             for oneresult in result:
