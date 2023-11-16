@@ -1,6 +1,7 @@
 import tornado.web
 
 from aidd.hander.dp_sider_hander import DpSiderHandler
+from aidd.hander.dti_local_handler import DtiLocalHandler
 from aidd.hander.dp_tox_hander import DpToxHandler
 from aidd.hander.dti_hander import DtiHandler
 from aidd.config.env import *  # 导入 os 模块，其中包含了环境变量
@@ -16,6 +17,7 @@ url_patterns = [
     (r"/tooling/dti", DtiHandler),
     (r"/tooling/dptox",DpToxHandler),
     (r"/tooling/dpsider",DpSiderHandler),
+    (r"/tooling/dtilocal", DtiLocalHandler),
 ]
 
 if __name__ =="__main__":
