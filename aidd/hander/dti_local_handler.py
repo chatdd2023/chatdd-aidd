@@ -19,7 +19,7 @@ class DtiLocalHandler(tornado.web.RequestHandler):
             errors=validate(json_data)
             if len(errors) > 0:
                 # 解析JSON数据失败，返回错误JSON响应
-                await self.finish(fail_response(request_id, errors))
+                await self.finish(fail_response(request_id, errors,500))
             request_id = json_data['request_id']
             logger_ouput_INFO(request_id, "__main__", "__main__", f"请求调用开始  request json : {json_data}")
 
