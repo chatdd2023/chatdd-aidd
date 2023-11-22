@@ -20,38 +20,57 @@ class DtiLocalHandler(tornado.web.RequestHandler):
             if len(errors) > 0:
                 # 解析JSON数据失败，返回错误JSON响应
                 await self.finish(fail_response(request_id, errors,500))
+                return
             request_id = json_data['request_id']
-            logger_ouput_INFO(request_id, "__main__", "__main__", f"请求调用开始  request json : {json_data}")
+            logger_ouput_INFO(request_id, self.__class__.__name__, "post",
+                              f"DTI靶点亲和性topk计算 请求调用开始  request json : {json_data}")
 
             # 化合物的输入
             target = json_data['target']
             top_n = int(json_data['top_n'])
             entry_names = transit_target2entry_name(target)
-            logger_ouput_INFO(request_id, "__main__", "__main__", f"请求调用开始  entry_names : {entry_names}")
+            logger_ouput_INFO(request_id, self.__class__.__name__, "post",
+                              f"entry_names : {entry_names}")
             if entry_names is None:
                message_target_error = constant.message_target_error.replace("{target name}", json_data['target'])
+               logger_ouput_Error(request_id, self.__class__.__name__, "post",
+                                 f"entry_names 为空 : {message_target_error}")
                await self.finish(fail_response(request_id, message_target_error,400))
+               return
             else:
                 # 靶点 & 小分子的输入
                 dti_all_result={}
                 for entry_name in entry_names:
-                    print("==========entry_name",entry_name)
+                    #print("==========entry_name",entry_name)
                     one_result = get_rank_molecule(entry_name,top_n)
                     if one_result:
                         dti_all_result.setdefault(entry_name,one_result)
+                logger_ouput_INFO(request_id, self.__class__.__name__, "post",
+                                  f"dti_all_result : {dti_all_result}")
                 if dti_all_result is None or len(dti_all_result)==0:
                     message_target_error = constant.message_target_error.replace("{target name}", json_data['target'])
+                    logger_ouput_Error(request_id, self.__class__.__name__, "post",
+                                      f"dti_all_result 为空 : {message_target_error}")
                     await self.finish(fail_response(request_id, message_target_error,400))
-                logger_ouput_INFO(request_id, "__main__", "__main__", f"DTI 计算结束  response json : {dti_all_result}")
+                    return
+                logger_ouput_INFO(request_id,  self.__class__.__name__, "post",
+                                  f"DTI 计算结束  response json : {dti_all_result}")
                 await self.finish(success_aidd_response(request_id, dti_all_result))
+                return
 
         except ValueError:
             # 解析JSON数据失败，返回错误JSON响应
+            logger_ouput_Error(request_id, self.__class__.__name__, "post",
+                              f"无效的JSON数据: {data}")
             await self.finish(fail_response(request_id, "无效的JSON数据",500))
+            return
 
         except Exception as e:
             # 处理异常情况，返回错误JSON响应
+            logger_ouput_Error(request_id, self.__class__.__name__, "post",
+                              f"{e}")
             await self.finish(fail_response(request_id, str(e),500))
+            return
 
 def validate(data:Dict)->List[str]:
     errors=[]

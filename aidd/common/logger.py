@@ -53,10 +53,10 @@ logger = init_logger('runtime-log')
 
 def logger_ouput_INFO( request_id: str, class_name, function_name, detail_message):
     logger.info(
-        f"request_id:{request_id} Class:{class_name} Function:{function_name} detail_message:{detail_message}")
+        f"request_id:{request_id} Project:Chatdd-aidd Class:{class_name} Function:{function_name} detail_message:{detail_message}")
 def logger_ouput_Error( request_id: str, class_name, function_name, detail_message):
     logger.error(
-        f"request_id:{request_id} Class:{class_name} Function:{function_name} detail_message:{detail_message}")
+        f"request_id:{request_id} Project:Chatdd-aidd Class:{class_name} Function:{function_name} detail_message:{detail_message}")
 
 
 if __name__ == '__main__':
