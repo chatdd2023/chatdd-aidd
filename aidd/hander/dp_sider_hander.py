@@ -19,6 +19,7 @@ class DpSiderHandler(tornado.web.RequestHandler):
     async def post(self):
         data = self.request.body.decode("utf-8")
         request_id=None
+        chat_session_id =None
         try:
             json_data = json.loads(data)
             errors=[]
@@ -28,25 +29,26 @@ class DpSiderHandler(tornado.web.RequestHandler):
                 await self.finish(fail_response(request_id, errors,500))
                 return
             request_id = json_data['request_id']
+            chat_session_id = json_data.get('chat_session_id','')
             logger_ouput_INFO(request_id, self.__class__.__name__, "post",
-                              f"药物副作用请求调用开始  request json : {json_data}")
+                              f"药物副作用请求调用开始  request json : {json_data}",chat_session_id=chat_session_id)
 
             # 化合物的输入
             compound = json_data['compound']
             input_result=get_canonical(compound)
             logger_ouput_INFO(request_id, self.__class__.__name__, "post",
-                              f"input_result : {input_result}")
+                              f"input_result : {input_result}",chat_session_id=chat_session_id)
             if input_result is None:
                 message_compound_error = constant.message_compound_error.replace("{compound name}", compound)
                 logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                                  f"input_result 为空 : {message_compound_error}")
+                                  f"input_result 为空 : {message_compound_error}",chat_session_id=chat_session_id)
                 await self.finish(fail_response(request_id, message_compound_error,400))
                 return
             else:
                 dpsider_service=DpSiderService()
                 dptsider_all_result = dpsider_service.process(request_id,input_result)
                 logger_ouput_INFO(request_id,  self.__class__.__name__, "post",
-                                  f"药物副作用计算结束  response json : {dptsider_all_result}")
+                                  f"药物副作用计算结束  response json : {dptsider_all_result}",chat_session_id=chat_session_id)
 
                 await self.finish(success_aidd_response(request_id, dptsider_all_result))
                 return
@@ -54,13 +56,13 @@ class DpSiderHandler(tornado.web.RequestHandler):
         except ValueError:
             # 解析JSON数据失败，返回错误JSON响应
             logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                              f"无效的JSON数据: {data}")
+                              f"无效的JSON数据: {data}",chat_session_id=chat_session_id)
             await self.finish(fail_response(request_id, "无效的JSON数据",500))
             return
         except Exception as e:
             # 处理异常情况，返回错误JSON响应
             logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                              f"{e}")
+                              f"{e}",chat_session_id=chat_session_id)
             await self.finish(fail_response(request_id, str(e),500))
             return
 

@@ -13,6 +13,7 @@ class DtiLocalHandler(tornado.web.RequestHandler):
     async def post(self):
         data = self.request.body.decode("utf-8")
         request_id=None
+        chat_session_id = None
         try:
             json_data = json.loads(data)
             errors=[]
@@ -22,19 +23,20 @@ class DtiLocalHandler(tornado.web.RequestHandler):
                 await self.finish(fail_response(request_id, errors,500))
                 return
             request_id = json_data['request_id']
+            chat_session_id = json_data.get('chat_session_id', '')
             logger_ouput_INFO(request_id, self.__class__.__name__, "post",
-                              f"DTI靶点亲和性topk计算 请求调用开始  request json : {json_data}")
+                              f"DTI靶点亲和性topk计算 请求调用开始  request json : {json_data}",chat_session_id=chat_session_id)
 
             # 化合物的输入
             target = json_data['target']
             top_n = int(json_data['top_n'])
             entry_names = transit_target2entry_name(target)
             logger_ouput_INFO(request_id, self.__class__.__name__, "post",
-                              f"entry_names : {entry_names}")
+                              f"entry_names : {entry_names}",chat_session_id=chat_session_id)
             if entry_names is None:
                message_target_error = constant.message_target_error.replace("{target name}", json_data['target'])
                logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                                 f"entry_names 为空 : {message_target_error}")
+                                 f"entry_names 为空 : {message_target_error}",chat_session_id=chat_session_id)
                await self.finish(fail_response(request_id, message_target_error,400))
                return
             else:
@@ -46,29 +48,29 @@ class DtiLocalHandler(tornado.web.RequestHandler):
                     if one_result:
                         dti_all_result.setdefault(entry_name,one_result)
                 logger_ouput_INFO(request_id, self.__class__.__name__, "post",
-                                  f"dti_all_result : {dti_all_result}")
+                                  f"dti_all_result : {dti_all_result}",chat_session_id=chat_session_id)
                 if dti_all_result is None or len(dti_all_result)==0:
                     message_target_error = constant.message_target_error.replace("{target name}", json_data['target'])
                     logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                                      f"dti_all_result 为空 : {message_target_error}")
+                                      f"dti_all_result 为空 : {message_target_error}",chat_session_id=chat_session_id)
                     await self.finish(fail_response(request_id, message_target_error,400))
                     return
                 logger_ouput_INFO(request_id,  self.__class__.__name__, "post",
-                                  f"DTI 计算结束  response json : {dti_all_result}")
+                                  f"DTI 计算结束  response json : {dti_all_result}",chat_session_id=chat_session_id)
                 await self.finish(success_aidd_response(request_id, dti_all_result))
                 return
 
         except ValueError:
             # 解析JSON数据失败，返回错误JSON响应
             logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                              f"无效的JSON数据: {data}")
+                              f"无效的JSON数据: {data}",chat_session_id=chat_session_id)
             await self.finish(fail_response(request_id, "无效的JSON数据",500))
             return
 
         except Exception as e:
             # 处理异常情况，返回错误JSON响应
             logger_ouput_Error(request_id, self.__class__.__name__, "post",
-                              f"{e}")
+                              f"{e}",chat_session_id=chat_session_id)
             await self.finish(fail_response(request_id, str(e),500))
             return
 

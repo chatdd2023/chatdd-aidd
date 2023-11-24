@@ -51,12 +51,12 @@ def init_logger(logger_name):
 
 logger = init_logger('runtime-log')
 
-def logger_ouput_INFO( request_id: str, class_name, function_name, detail_message):
+def logger_ouput_INFO( request_id: str, class_name, function_name, detail_message,chat_session_id=None):
     logger.info(
-        f"request_id:{request_id} Project:Chatdd-aidd Class:{class_name} Function:{function_name} detail_message:{detail_message}")
-def logger_ouput_Error( request_id: str, class_name, function_name, detail_message):
+        f"request_id:{request_id} Project:chatdd-aidd chat_session_id:{chat_session_id} Class:{class_name} Function:{function_name} detail_message:{detail_message}")
+def logger_ouput_Error( request_id: str, class_name, function_name, detail_message,chat_session_id=None):
     logger.error(
-        f"request_id:{request_id} Project:Chatdd-aidd Class:{class_name} Function:{function_name} detail_message:{detail_message}")
+        f"request_id:{request_id} Project:chatdd-aidd chat_session_id:{chat_session_id} Class:{class_name} Function:{function_name} detail_message:{detail_message}")
 
 
 if __name__ == '__main__':
