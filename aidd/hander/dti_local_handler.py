@@ -82,6 +82,7 @@ def validate(data:Dict)->List[str]:
             return errors
     return errors
 
+#dtilocal #dti: target信息可能是name也可能是entry_name还可能是缩写，需要统一转化为entryname,name->entryname，一对多 entry->seq 一对一
 def transit_target2entry_name(target):
     lines = TargetProteinInfoService().seachSequenceByName(target)
     if not lines or len(lines)==0:

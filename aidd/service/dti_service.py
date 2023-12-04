@@ -16,6 +16,7 @@ class DTIService(object):
          self.model = DTIModel(self.config["network"], pred_dim=1)
          self.state_dict = torch.load(os.getenv("DTI_MODEL_PATH"), map_location="cpu")
 
+    #dti: target信息可能是name也可能是entry_name还可能是缩写，需要同意转化为sequence,name->entryname一对多
     def process(self,request_id,smi_clean,target):
         logger_ouput_INFO(request_id, "DTIService", "process", f"DTI 计算开始  smi_clean:{smi_clean} target:{target}")
         sequence=self.target.seachSequenceByName(target)

@@ -104,6 +104,7 @@ class MySqLHelper(object):
             if autoclose:
                 self.close(cursor, conn)
         except Exception as e:
+            print(e)
             pass
         return cursor, conn, count
 
