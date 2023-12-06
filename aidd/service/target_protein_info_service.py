@@ -18,18 +18,21 @@ class TargetProteinInfoService(object):
 
     def seachSequenceByName(self,name):
         #name可能是entryname
-        result=self.mysqlhelper.selectall("select name,entry_name,uniprot_id from chatdd_target_protein_hgnc where lower(name)=lower(%s) or lower(entry_name)=lower(%s)",(name,name))
+        result=self.mysqlhelper.selectall("select DISTINCT uniprot_id,name,entry_name from chatdd_target_protein_hgnc where lower(name)=lower(%s) or lower(entry_name)=lower(%s)",(name,name))
 
         if len(result)>0:
             resultlist=[]
             for oneresult in result:
                 ans =[]
-                ans.append(oneresult[0])
                 ans.append(oneresult[1])
-                uniprot_id = oneresult[2].decode('utf-8')
+                ans.append(oneresult[2])
+                uniprot_id = oneresult[0].decode('utf-8')
                 sequence = self.mysqlhelper.selectone("select sequence from chatdd_target_sequence_hgnc where lower(uniprot_id)=lower(%s)",(uniprot_id))
-                ans.append(sequence)
-                resultlist.append(ans)
+                if sequence and len(sequence)>0:
+                    ans.append(sequence[0])
+                    resultlist.append(ans)
+                else:
+                    pass
             return resultlist
         return None
 
