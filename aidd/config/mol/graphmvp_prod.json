@@ -16,7 +16,7 @@
           "gin_hidden_dim": 300,
           "gin_num_layers": 5,
           "drop_ratio": 0.5,
-          "init_checkpoint": "/root/chatdd/model/dp/pretraining_model.pth",
+          "init_checkpoint": "/root/chatdd//chatdd-aidd/model/dp/pretraining_model.pth",
           "param_key": ""
       },
       "pred_head": {

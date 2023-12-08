@@ -22,11 +22,11 @@
     "network": {
         "mol": {
             "name": "mgnn",
-            "config_path": "/share-vepfs/chatdd-aidd-env/chatdd-aidd/aidd/config/mol/mgnn.json"
+            "config_path": "/root/chatdd-aidd/pre/aidd/config/mol/mgnn.json"
         },
         "protein": {
             "name": "mcnn",
-            "config_path": "/share-vepfs/chatdd-aidd-env/chatdd-aidd/aidd/config/protein/mcnn.json"
+            "config_path": "/root/chatdd-aidd/pre/aidd/config/protein/mcnn.json"
         },
         "pred_head": {
             "hidden_size": [1024, 1024, 256],
